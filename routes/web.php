@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,17 +19,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+
+Route::resource('/appointment', AppointmentController::class);
+Route::get('/getAvailableTimeSlots/{date}', [AppointmentController::class, 'getAvailableTimeSlots']);
 
 Route::middleware(['auth'])->group(callback: function (){
-    Route::get('/event', function (){
-        return view('event');
-    })->name('event');
+    Route::get('/dashboard', [PageController::class, 'dashboard'])->name('dashboard');
+    Route::get('/event', [PageController::class, 'event'])->name('event');
 
-    Route::get('/scheduled-events', function (){
-        return view('scheduled_events');
-    })->name('scheduled-events');
+    Route::get('/appointment/{appointment_id}/markAsDone', [AppointmentController::class, 'markAsDone']);
+    Route::get('/appointment/{appointment_id}/delete', [AppointmentController::class, 'destroy']);
+
 });
 require __DIR__.'/auth.php';
